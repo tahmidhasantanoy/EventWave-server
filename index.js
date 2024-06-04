@@ -10,7 +10,7 @@ const port = process.env.PORT || 3000;
 app.use(cors()); //cors policy
 app.use(express.json()); //request body parser
 
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.oc9fgut.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -42,15 +42,23 @@ async function run() {
       res.send(cursor);
     });
 
-    // app.get("/all-toys", async (req, res) => {
-    //   let query = {};
-    //   if (req.query?.email) {
-    //     query = { email: req.query.email };
-    //   }
-    //   const cursor = toysCollection.find(query);
-    //   const result = await cursor.toArray();
-    //   res.send(result);
-    // });
+    // get all event-info
+    app.get("/event-info", async (req, res) => {
+      const cursor = eventInfoCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    // get single event-info for update
+    // ttp://localhost:3000/get-single-event/665ea7c6723b8c450da6bb11
+    app.get("/get-single-event/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+
+      const cursor = await eventInfoCollection.findOne(query);
+      console.log(cursor);
+      res.send(cursor);
+    });
 
     // //Subcategory route
     // app.get("/sub-cat", async (req, res) => {
