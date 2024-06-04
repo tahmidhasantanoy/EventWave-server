@@ -26,19 +26,27 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
-    const eventCollection = client.db("EventWave").collection("users-info");
+    const userInfoCollection = client.db("EventWave").collection("users-info");
     const eventInfoCollection = client
       .db("EventWave")
       .collection("events-info");
 
     // get user data
-    // http://localhost:3000/user-data/${params.email}
     app.get("/user-data/:email", async (req, res) => {
-      console.log(req.params.email);
+      // console.log(req.params.email);
       const email = req.params?.email;
       const query = { email: email };
-      console.log(query);
-      const cursor = await eventCollection.findOne(query);
+      // console.log(query);
+      const cursor = await userInfoCollection.findOne(query);
+      res.send(cursor);
+    });
+
+    app.get("/update-user-data/:id", async (req, res) => {
+      // console.log(req.params.id);
+      const id = req.params?.id;
+      const query = { _id: new ObjectId(id) };
+      // console.log(query);
+      const cursor = await userInfoCollection.findOne(query);
       res.send(cursor);
     });
 
@@ -56,7 +64,7 @@ async function run() {
       const query = { _id: new ObjectId(id) };
 
       const cursor = await eventInfoCollection.findOne(query);
-      console.log(cursor);
+      // console.log(cursor);
       res.send(cursor);
     });
 
@@ -89,14 +97,16 @@ async function run() {
     // Upload event data
     app.post("/user-info", async (req, res) => {
       const userData = req.body;
-      console.log(userData);
-      const isExist = await eventCollection.findOne({ email: userData?.email });
-      console.log(isExist);
+      // console.log(userData);
+      const isExist = await userInfoCollection.findOne({
+        email: userData?.email,
+      });
+      // console.log(isExist);
       if (isExist) {
         res.send("Already stored");
       }
       //server to db
-      const result = await eventCollection.insertOne(userData);
+      const result = await userInfoCollection.insertOne(userData);
       res.send(result);
     });
 
@@ -109,31 +119,60 @@ async function run() {
       res.send(result);
     });
 
-    // //countinue
-    // app.put("/all-toys/:update_id", async (req, res) => {
-    //   const id = req.params.update_id;
+    // update single user info 
+    app.put("/single-user-info/:update_id", async (req, res) => {
+      const id = req.params.update_id;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updateUserInfo = req.body;
+      const updateDoc = {
+        $set: {
+          name: updateUserInfo.name,
+          email: updateUserInfo.email,
+          role: updateUserInfo.role,
+          experience: updateUserInfo.experience,
+          imageURL: updateUserInfo.imageURL,
+        },
+      };
+      const result = await userInfoCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.send(result);
+    });
 
-    //   const filter = { _id: new ObjectId(id) };
-    //   const options = { upsert: true };
-    //   const updateToyInfo = req.body;
-    //   const updateDoc = {
-    //     $set: {
-    //       name: updateToyInfo.name,
-    //       SellerName: updateToyInfo.SellerName,
-    //       email: updateToyInfo.email,
-    //       price: updateToyInfo.price,
-    //       subCategory: updateToyInfo.subCategory,
-    //       rating: updateToyInfo.rating,
-    //       quantity: updateToyInfo.quantity,
-    //       photoUrl: updateToyInfo.photoUrl,
-    //       description: updateToyInfo.description,
-    //       toyName: updateToyInfo.toyName,
-    //     },
-    //   };
-
-    //   const result = await toysCollection.updateOne(filter, updateDoc, options);
-    //   res.send(result);
-    // });
+    //countinue
+    app.put("/single-event-info/:update_id", async (req, res) => {
+      const id = req.params.update_id;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updateEventInfo = req.body;
+      const updateDoc = {
+        $set: {
+          eventName: updateEventInfo.eventName,
+          eventDateTime: updateEventInfo.eventDateTime,
+          eventLocation: updateEventInfo.eventLocation,
+          eventDescription: updateEventInfo.eventDescription,
+          organizerName: updateEventInfo.organizerName,
+          organizerEmail: updateEventInfo.organizerEmail,
+          organizerBio: updateEventInfo.organizerBio,
+          speakersPerformers: updateEventInfo.speakersPerformers,
+          ticketsRegistrationLink: updateEventInfo.ticketsRegistrationLink,
+          ticketsPrice: updateEventInfo.ticketsPrice,
+          targetAudience: updateEventInfo.targetAudience,
+          sponsorsPartners: updateEventInfo.sponsorsPartners,
+          promotionalImages: updateEventInfo.promotionalImages,
+          socialMediaFacebook: updateEventInfo.socialMediaFacebook,
+        },
+      };
+      const result = await eventInfoCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.send(result);
+    });
 
     // //Delete
     // app.delete("/all-toys/:id", async (req, res) => {
