@@ -33,11 +33,12 @@ async function run() {
 
     // get user data
     app.get("/user-data/:email", async (req, res) => {
-      // console.log(req.params.email);
+      console.log(req.params.email);
       const email = req.params?.email;
       const query = { email: email };
-      // console.log(query);
+      console.log(query); //here we go || vai video
       const cursor = await userInfoCollection.findOne(query);
+      console.log(cursor);
       res.send(cursor);
     });
 
@@ -57,8 +58,7 @@ async function run() {
       res.send(result);
     });
 
-    // get single event-info for update
-    // ttp://localhost:3000/get-single-event/665ea7c6723b8c450da6bb11
+    // get single event info for update
     app.get("/get-single-event/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
@@ -68,6 +68,16 @@ async function run() {
       res.send(cursor);
     });
 
+    // Dashboard
+    // Data by email
+    app.get("/user-added-event/:qemail", async (req, res) => {
+      const qemail = req.params?.qemail;
+      const query = { userEmail: qemail };
+      const cursor = await eventInfoCollection.find(query);
+      const result = await cursor.toArray();
+      // console.log(result);
+      res.send(result);
+    });
     // //Subcategory route
     // app.get("/sub-cat", async (req, res) => {
     //   let query = {};
@@ -103,7 +113,7 @@ async function run() {
       });
       // console.log(isExist);
       if (isExist) {
-        res.send("Already stored");
+        res.send({ message: "Already stored" });
       }
       //server to db
       const result = await userInfoCollection.insertOne(userData);
@@ -119,7 +129,7 @@ async function run() {
       res.send(result);
     });
 
-    // update single user info 
+    // update single user info
     app.put("/single-user-info/:update_id", async (req, res) => {
       const id = req.params.update_id;
       const filter = { _id: new ObjectId(id) };
