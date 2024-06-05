@@ -24,7 +24,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     const userInfoCollection = client.db("EventWave").collection("users-info");
     const eventInfoCollection = client
@@ -78,31 +78,7 @@ async function run() {
       // console.log(result);
       res.send(result);
     });
-    // //Subcategory route
-    // app.get("/sub-cat", async (req, res) => {
-    //   let query = {};
-    //   if (req.query?.subCategory) {
-    //     query = { subCategory: req.query.subCategory };
-    //   }
-    //   const cursor = toysCollection.find(query);
-    //   const result = await cursor.toArray();
-    //   res.send(result);
-    // });
 
-    // app.get("/change", async (req, res) => {
-    //   const result = await toysCollection.updateMany({}, [
-    //     { $set: { price: { $toDouble: "$price" } } },
-    //   ]);
-    //   res.send(result);
-    // });
-
-    // //Get for update
-    // app.get("/all-toys/:update_id", async (req, res) => {
-    //   const id = req.params.update_id;
-    //   const query = { _id: new ObjectId(id) };
-    //   const result = await toysCollection.findOne(query);
-    //   res.send(result);
-    // });
 
     // Upload event data
     app.post("/user-info", async (req, res) => {
@@ -195,10 +171,10 @@ async function run() {
     });
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!"
-    );
+    // await client.db("admin").command({ ping: 1 });
+    // console.log(
+    //   "Pinged your deployment. You successfully connected to MongoDB!"
+    // );
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
