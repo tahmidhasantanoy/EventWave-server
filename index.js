@@ -184,15 +184,15 @@ async function run() {
       res.send(result);
     });
 
-    // //Delete
-    // app.delete("/all-toys/:id", async (req, res) => {
-    //   const delete_id = req.params.id;
-    //   console.log(delete_id);
+    //Delete
+    app.delete("/all-event/:id", async (req, res) => {
+      const delete_id = req.params.id;
+      console.log(delete_id);
 
-    //   const query = { _id: new ObjectId(delete_id) };
-    //   const result = await toysCollection.deleteOne(query);
-    //   res.send(result);
-    // });
+      const query = { _id: new ObjectId(delete_id) };
+      const result = await eventInfoCollection.deleteOne(query);
+      res.send(result);
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
